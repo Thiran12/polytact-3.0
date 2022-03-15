@@ -36,6 +36,7 @@ public class AIMoveScript : MonoBehaviour
         {
             finalPosition = hit.position;
         }
+        //// UnityEngine.Debug.LogFormat("Pes: {0}", finalPosition);
         return finalPosition;
              
     }

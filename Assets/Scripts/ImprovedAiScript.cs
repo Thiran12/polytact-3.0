@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AI;
 public class ImprovedAiScript : MonoBehaviour
@@ -19,6 +21,9 @@ public class ImprovedAiScript : MonoBehaviour
     public float edgeDistance = 0.5f;
 
     public Transform[] waypoints;
+
+    [Range(1, 500)] public float walkRadius;
+
     int m_CurrentWaypointIndex;
 
     Vector3 playerLastPosition = Vector3.zero;
@@ -45,20 +50,24 @@ public class ImprovedAiScript : MonoBehaviour
 
         navMeshAgent.isStopped = false;
         navMeshAgent.speed = speedWalk;
-        navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
+        NextPoint();
     }
 
     
     void Update()
     {
+        // Have I seen the player
         EnviromentView();
 
+        // Yes
         if (!m_IsPatrol)
         {
+            // Chase him
             Chasing();
         }
         else
         {
+            // No: Get random location
             Patroling();
         }
     }
@@ -94,6 +103,7 @@ public class ImprovedAiScript : MonoBehaviour
             }
         }
     }
+
     private void Patroling()
     {
         if (m_PlayerNear)
@@ -113,7 +123,6 @@ public class ImprovedAiScript : MonoBehaviour
         {
             m_PlayerNear = false;
             playerLastPosition = Vector3.zero;
-            navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
             if(navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
             {
                 if(m_WaitTime <= 0)
@@ -143,8 +152,15 @@ public class ImprovedAiScript : MonoBehaviour
     }
     public void NextPoint()
     {
-        m_CurrentWaypointIndex = (m_CurrentWaypointIndex + 1) % waypoints.Length;
-        navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
+        Vector3 finalPosition = Vector3.zero;
+        Vector3 randomposition = Random.insideUnitSphere * walkRadius;
+        randomposition += transform.position;
+        if(NavMesh.SamplePosition(randomposition, out NavMeshHit hit, walkRadius, NavMesh.AllAreas))
+        {
+            finalPosition = hit.position;
+        }
+        UnityEngine.Debug.LogFormat("Nme: {0}", finalPosition);
+        navMeshAgent.SetDestination(new Vector3(finalPosition.x, this.transform.position.y, finalPosition.z));
     }
 
 
@@ -162,7 +178,7 @@ public class ImprovedAiScript : MonoBehaviour
             {
                 m_PlayerNear = false;
                 Move(speedWalk);
-                navMeshAgent.SetDestination(waypoints[m_CurrentWaypointIndex].position);
+                navMeshAgent.SetDestination(new Vector3(waypoints[m_CurrentWaypointIndex].position.x, this.transform.position.y, waypoints[m_CurrentWaypointIndex].position.z));
                 m_WaitTime = startWaitTime;
                 m_TimeToRotate = timeToRotate;
             }
@@ -202,7 +218,7 @@ public class ImprovedAiScript : MonoBehaviour
 
             if (m_playerInRange)
             {
-                m_PlayerPosition = player.transform.position;
+                m_PlayerPosition = new Vector3(player.transform.position.x, this.transform.position.y, player.transform.position.z);
             }
         }
     }
