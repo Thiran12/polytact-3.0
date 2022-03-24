@@ -27,7 +27,7 @@ public class camera : MonoBehaviour
         }
         if (Input.mouseScrollDelta.y != 0)
         {
-            cinemachineFreeLook.m_YAxis.m_MaxSpeed = 50;
+            cinemachineFreeLook.m_YAxis.m_MaxSpeed = 100;
         }
        
     }

@@ -19,7 +19,7 @@ public class Speed : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.LeftShift))
         {
-            Time.timeScale = 1;
+         Time.timeScale = 1;
         }
     }
 }
