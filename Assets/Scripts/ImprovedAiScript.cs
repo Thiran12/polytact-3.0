@@ -12,13 +12,16 @@ public class ImprovedAiScript : MonoBehaviour
     public float speedWalk = 6;
     public float speedRun = 9;
 
+   
+    public bool OutputDebug = false;
+
     public float ViewRadius = 15;
     public float ViewAngle = 90;
     public LayerMask playerMask;
     public LayerMask obstacleMask;
     public float meshResolution = 1f;
     public int edgeIterations = 4;
-    public float edgeDistance = 0.5f;
+    public float EdgeAvoidanceDist = 0.5f;
 
     public Transform[] waypoints;
 
@@ -150,19 +153,33 @@ public class ImprovedAiScript : MonoBehaviour
         navMeshAgent.isStopped = false;
         navMeshAgent.speed = 0;
     }
-    public void NextPoint()
+  public void NextPoint()
     {
         Vector3 finalPosition = Vector3.zero;
         Vector3 randomposition = Random.insideUnitSphere * walkRadius;
         randomposition += transform.position;
-        if(NavMesh.SamplePosition(randomposition, out NavMeshHit hit, walkRadius, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomposition, out NavMeshHit hit, walkRadius, NavMesh.AllAreas))
         {
             finalPosition = hit.position;
         }
-        UnityEngine.Debug.LogFormat("Nme: {0}", finalPosition);
-        navMeshAgent.SetDestination(new Vector3(finalPosition.x, this.transform.position.y, finalPosition.z));
-    }
 
+        if (OutputDebug)
+        {
+            UnityEngine.Debug.LogFormat("Nme: {0}", finalPosition);
+        }
+
+        NavMeshHit nmHit;
+        if (NavMesh.FindClosestEdge(new Vector3(finalPosition.x, this.transform.position.y, finalPosition.z), out nmHit, NavMesh.AllAreas))
+        { 
+            if (nmHit.distance >= EdgeAvoidanceDist)
+            {
+                navMeshAgent.SetDestination(new Vector3(finalPosition.x, this.transform.position.y, finalPosition.z));
+            }
+        } else
+        {
+            navMeshAgent.SetDestination(new Vector3(finalPosition.x, this.transform.position.y, finalPosition.z));
+        }
+    }
 
     void Caughtplayer()
     {
