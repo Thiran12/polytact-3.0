@@ -315,7 +315,7 @@ MonoBehaviour:
   playerCombatRange: 2
   GameController: {fileID: 0}
   ArmyStrIndicator: {fileID: 3516686856879296128}
-  DeadPrefab: {fileID: 7819513839797550808, guid: 2fee5a8987ab70741bc228ff26f4ad62, type: 3}
+  DeadPrefab: {fileID: 5811457661695831485, guid: ed95d06ff8cefc741ba1315a8d6fad1d, type: 3}
   AliveTarget: {fileID: 388989772997951360}
   OutputDebug: 0
   ViewRadius: 20
