@@ -15,7 +15,7 @@ public class Speed : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            Time.timeScale = 6;
+            Time.timeScale = 3;
         }
         else if (Input.GetKey(KeyCode.LeftShift))
         {
